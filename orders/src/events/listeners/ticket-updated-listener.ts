@@ -4,7 +4,7 @@ import { Message } from "node-nats-streaming";
 import { Ticket } from "../../models/ticket";
 
 export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
-  subject: Subjects.TicketUpdated = Subjects.TicketUpdated;
+  readonly subject = Subjects.TicketUpdated;
   queueGroupName = queueGroupName;
 
   async onMessage(data: TicketUpdatedEvent["data"], msg: Message) {

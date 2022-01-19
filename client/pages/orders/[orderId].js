@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import useRequest from "../../hooks/use-request";
 import Router from "next/router";
 import PaytmScript from "../../scripts/paytm";
+import Timer from "../../components/timer";
 
 const OrderShow = ({ order }) => {
   let paymentResponse;
@@ -16,6 +17,10 @@ const OrderShow = ({ order }) => {
       paytmToken = token;
     },
   });
+
+  setTimeout(() => {
+    setTimeLeft(-1);
+  }, new Date(order.expiresAt) - new Date());
 
   const initializepaytm = () => {
     return new Promise((resolve) => {
@@ -41,24 +46,24 @@ const OrderShow = ({ order }) => {
 
   let paytmToken = "";
 
-  useEffect(() => {
-    const findTimeLeft = () => {
-      const msLeft = new Date(order.expiresAt) - new Date();
-      setTimeLeft(Math.round(msLeft / 1000));
-    };
+  // useEffect(() => {
+  //   const findTimeLeft = () => {
+  //     const msLeft = new Date(order.expiresAt) - new Date();
+  //     setTimeLeft(Math.round(msLeft / 1000));
+  //   };
 
-    findTimeLeft();
-    console.log(order);
-    if(order.status === "complete") {
-      Router.push("/");
-    }
+  //   findTimeLeft();
+  //   console.log(order);
+  //   if(order.status === "complete") {
+  //     Router.push("/");
+  //   }
 
-    const timerId = setInterval(findTimeLeft, 1000);
+  //   const timerId = setInterval(findTimeLeft, 1000);
 
-    return () => {
-      clearInterval(timerId);
-    };
-  }, [order]);
+  //   return () => {
+  //     clearInterval(timerId);
+  //   };
+  // }, [order]);
 
   if (timeLeft < 0) {
     return <div>Order expired!</div>;
@@ -157,11 +162,10 @@ const OrderShow = ({ order }) => {
 
   return (
     <div>
-      <div>Time left to pay: {timeLeft} seconds</div>
+      <div>Time left to pay: <Timer expiryTime={order.expiresAt}/> seconds</div>
       <button className="btn btn-primary" onClick={makePayment}>
         Pay: {order.ticket.price}
       </button>
-      <PaytmScript></PaytmScript>
     </div>
   );
 };
